@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body,
+        html {
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f857a6;
+            background: -webkit-radial-gradient(circle, #f857a6 0%, #ff5858 100%);
+            background: radial-gradient(circle, #f857a6 0%, #ff5858 100%);
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: center;
+            height: 100%;
+            padding: 40px;
+            gap: 40px;
+            color: white;
+        }
+
+        .headline {
+            text-align: center;
+
+        }
+
+        h1 {
+            color: white;
+            font-size: 64px;
+            font-weight: bold;
+        }
+
+        h3 {
+            color: white;
+            font-size: 24px;
+            font-weight: lighter;
+        }
+
+        form {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        select {
+            width: 200px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        button {
+            padding: 8px 20px;
+            background-color: white;
+            color: #f857a6;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #eb2384;
+            color: white;
+        }
+
+        #result {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-direction: column-reverse;
+            margin-bottom: 20px;
+            padding-bottom: 30px;
+            padding-top: -40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="headline">
+            <h1>Instant Degrees</h1>
+            <h3>Get the temperature you need, instantly</h3>
+        </div>
+        <form id="conversionForm">
+            <label for="temperature">Enter the temperature value:</label>
+            <input type="text" id="temperature" name="temperature"><br><br>
+
+            <label for="unit">Select the temperature unit:</label>
+            <select id="unit" name="unit">
+                <option value="c">Celsius</option>
+                <option value="f">Fahrenheit</option>
+                <option value="k">Kelvin</option>
+            </select><br><br>
+
+            <button type="button" onclick="convert()">Convert</button>
+        </form>
+
+        <div id="result">
+            <!-- <img src="/static/images/inv.png" alt="Inventory Image"> -->
+
+        </div>
+    </div>
+
+    <script>
+        function convert() {
+            var form = document.getElementById("conversionForm");
+            var formData = new FormData(form);
+        
+            fetch("/", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                var resultContainer = document.getElementById("result");
+                resultContainer.innerHTML = ""; 
+                
+                if (data.startsWith("Invalid")) {
+                    // Display invalid text
+                    var invalidText = document.createElement("div");
+                    invalidText.textContent = data;
+                    resultContainer.appendChild(invalidText);
+                    
+                    // Display invalid image
+                    var invalidImg = document.createElement("img");
+                    invalidImg.src = "/static/images/inv.png";
+                    invalidImg.alt = "InvaliD";
+                    invalidImg.height = 500;
+                    invalidImg.width = 500;
+                    resultContainer.appendChild(invalidImg);
+                } else {
+                    // Display output text
+                    var outputText = document.createElement("div");
+                    outputText.classList.add("output");
+                    outputText.innerHTML = data;
+                    resultContainer.appendChild(outputText);
+                    
+                    // Display output image
+                    var outputImg = document.createElement("img");
+                    outputImg.src = "/static/images/out-put.png";
+                    outputImg.alt = "Output";
+                    resultContainer.appendChild(outputImg);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }        
+    </script>
+</body>
+
+</html>
